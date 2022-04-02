@@ -7,24 +7,24 @@ git submodule init
 git submodule sync
 git submodule update
 
-# local.conf won't exist until this step on first execution
-source poky/oe-init-build-env
+cd poky
 
+# local.conf won't exist until this step on first execution
+source oe-init-build-env
+pwd
 #Target 
 CONFLINE="MACHINE = \"raspberrypi4\""
 cat conf/local.conf | grep "${CONFLINE}" > /dev/null
 local_conf_info=$?
 
-#Licence
-LICENCE="LICENSE_FLAGS_WHITELIST = \"commercial\""
 
 #Wifi
-DISTRO_F="DISTRO_FEATURES_append = \"wifi\""
+DISTRO_F="DISTRO_FEATURES:append = \"wifi\""
 cat conf/local.conf | grep "${DISTRO_F}" > /dev/null
 local_distro_info=$?
 
 #firmware
-IMAGE_ADD="IMAGE_INSTALL_append = \"linux-firmware-rpidistro-bcm43430 v4l-utils python3 ntp wpa-supplicant\""
+IMAGE_ADD="IMAGE_INSTALL:append = \"linux-firmware-rpidistro-bcm43430 v4l-utils python3 ntp wpa-supplicant libgpiod libgpiod-tools libgpiod-dev i2c-tools\""
 cat conf/local.conf | grep "${IMAGE_ADD}" > /dev/null
 local_imgadd_info=$?
 
@@ -34,19 +34,19 @@ cat conf/local.conf | grep "${IMAGE_F}" > /dev/null
 local_imgf_info=$?
 
 #wifi
-#CORE_IM_ADD="CORE_IMAGE_EXTRA_INSTALL += \"i2c-config gpio-config client-config server-config wifi-init-configuration\""
+#CORE_IM_ADD="CORE_IMAGE_EXTRA_INSTALL += \"gpiotest\""
 #cat conf/local.conf | grep "${CORE_IM_ADD}" > /dev/null
 #local_coreimadd_info=$?
 
 #I2C
-#MODULE_I2C="ENABLE_I2C = \"1\""
-#cat conf/local.conf | grep "${MODULE_I2C}" > /dev/null
-#local_i2c_info=$?
+MODULE_I2C="ENABLE_I2C = \"1\""
+cat conf/local.conf | grep "${MODULE_I2C}" > /dev/null
+local_i2c_info=$?
 
 #Kernel Module
-#AUTOLOAD_I2C="KERNEL_MODULE_AUTOLOAD:rpi += \"i2c-dev i2c-bcm2708\""
-#cat conf/local.conf | grep "${AUTOLOAD_I2C}" > /dev/null
-#local_i2c_autoload_info=$?
+AUTOLOAD_I2C="KERNEL_MODULE_AUTOLOAD:rpi += \"i2c-dev i2c-bcm2708\""
+cat conf/local.conf | grep "${AUTOLOAD_I2C}" > /dev/null
+local_i2c_autoload_info=$?
 
 #Add files which are missing in local.conf
 
@@ -84,22 +84,22 @@ fi
 #        echo "Append ${CORE_IM_ADD} in the local.conf file"
 #        echo ${CORE_IM_ADD} >> conf/local.conf       
 #else
-#        echo "${CORE_IM_ADD} already exists in the local.conf file"
+#       echo "${CORE_IM_ADD} already exists in the local.conf file"
 #fi
 
-#if [ $local_i2c_info -ne 0 ];then
-#        echo "Append ${MODULE_I2C} in the local.conf file"
-#        echo ${MODULE_I2C} >> conf/local.conf
-#else
-#        echo "${MODULE_I2C} already exists in the local.conf file"
-#fi
+if [ $local_i2c_info -ne 0 ];then
+        echo "Append ${MODULE_I2C} in the local.conf file"
+        echo ${MODULE_I2C} >> conf/local.conf
+else
+        echo "${MODULE_I2C} already exists in the local.conf file"
+fi
 
-#if [ $local_i2c_autoload_info -ne 0 ];then
-#        echo "Append ${AUTOLOAD_I2C} in the local.conf file"
-#        echo ${AUTOLOAD_I2C} >> conf/local.conf
-#else
-#        echo "${AUTOLOAD_I2C} already exists in the local.conf file"
-#fi
+if [ $local_i2c_autoload_info -ne 0 ];then
+        echo "Append ${AUTOLOAD_I2C} in the local.conf file"
+        echo ${AUTOLOAD_I2C} >> conf/local.conf
+else
+        echo "${AUTOLOAD_I2C} already exists in the local.conf file"
+fi
 
 # Add required meta-layer
 
@@ -142,7 +142,7 @@ if [ $layer_info -ne 0 ];then
 else
         echo "meta-raspberrypi layer already exists"
 fi
-<<<comment
+
 bitbake-layers show-layers | grep "meta-i2c" > /dev/null
 layer_info=$?
 
@@ -152,7 +152,6 @@ if [ $layer_info -ne 0 ];then
 else
         echo "meta-i2c layer already exists"
 fi
-
 
 bitbake-layers show-layers | grep "meta-gpio" > /dev/null
 layer_info=$?
@@ -194,8 +193,18 @@ else
         echo "meta-wifi layer already exists"
 fi
 
-comment 
+bitbake-layers show-layers | grep "meta-gpiotest" > /dev/null
+layer_info=$?
+
+if [ $layer_info -ne 0 ];then
+        echo "Adding meta-gpiotest layer"
+        bitbake-layers add-layer ../meta-gpiotest
+else
+        echo "meta-gpiotest layer already exists"
+fi
+
 
 set -e
 
 bitbake core-image-base
+
