@@ -33,10 +33,10 @@ IMAGE_F="IMAGE_FEATURES += \"ssh-server-openssh\""
 cat conf/local.conf | grep "${IMAGE_F}" > /dev/null
 local_imgf_info=$?
 
-#wifi
-#CORE_IM_ADD="CORE_IMAGE_EXTRA_INSTALL += \"gpiotest\""
-#cat conf/local.conf | grep "${CORE_IM_ADD}" > /dev/null
-#local_coreimadd_info=$?
+#extra packages
+CORE_IM_ADD="CORE_IMAGE_EXTRA_INSTALL += \"gpiotest i2c-config\""
+cat conf/local.conf | grep "${CORE_IM_ADD}" > /dev/null
+local_coreimadd_info=$?
 
 #I2C
 MODULE_I2C="ENABLE_I2C = \"1\""
@@ -80,12 +80,12 @@ else
         echo "${IMAGE_F} already exists in the local.conf file"
 fi
 
-#if [ $local_coreimadd_info -ne 0 ];then
-#        echo "Append ${CORE_IM_ADD} in the local.conf file"
-#        echo ${CORE_IM_ADD} >> conf/local.conf       
-#else
-#       echo "${CORE_IM_ADD} already exists in the local.conf file"
-#fi
+if [ $local_coreimadd_info -ne 0 ];then
+        echo "Append ${CORE_IM_ADD} in the local.conf file"
+        echo ${CORE_IM_ADD} >> conf/local.conf       
+else
+       echo "${CORE_IM_ADD} already exists in the local.conf file"
+fi
 
 if [ $local_i2c_info -ne 0 ];then
         echo "Append ${MODULE_I2C} in the local.conf file"
