@@ -1,19 +1,53 @@
-// Server side C/C++ program to demonstrate Socket programming
+/*Reference: https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c*/
+/*Modified By Abhishek Suryawanshi*/
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <stdio.h>
+#include <netdb.h>
+#include <sys/types.h>
+
 #define PORT 8080
+#define MAX  10000
+
+void datasend(int new_socket ){
+
+   char buff[MAX];
+   int n;
+
+   while(1){
+   
+       bzero(buff,MAX);
+
+        read(new_socket,buff,sizeof(buff));
+	printf("From Client:%s \t To Client:",buff);
+	bzero(buff,MAX);
+	n=0;
+	while((buff[n++]=getchar( ))!='\n');
+	write(new_socket,buff,sizeof(buff));
+
+	if (strncmp("exit", buff, 4) == 0) {
+			printf("Server Exit...\n");
+			break;
+		}
+   
+   }
+
+}
+
+
+
 int main(int argc, char const *argv[])
 {
 	int server_fd, new_socket;
 	struct sockaddr_in address;
 	int opt = 1;
 	int addrlen = sizeof(address);
-	char buffer[1024] = {0};
-	char *hello = "Hello from server";
+	//char buffer[1024] = {0};
+
 	
 	// Creating socket file descriptor
 	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
@@ -23,8 +57,7 @@ int main(int argc, char const *argv[])
 	}
 	
 	// Forcefully attaching socket to the port 8080
-	if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
-												&opt, sizeof(opt)))
+	if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,&opt, sizeof(opt)))
 	{
 		perror("setsockopt");
 		exit(EXIT_FAILURE);
@@ -34,8 +67,7 @@ int main(int argc, char const *argv[])
 	address.sin_port = htons( PORT );
 	
 	// Forcefully attaching socket to the port 8080
-	if (bind(server_fd, (struct sockaddr *)&address,
-								sizeof(address))<0)
+	if (bind(server_fd, (struct sockaddr *)&address,sizeof(address))<0)
 	{
 		perror("bind failed");
 		exit(EXIT_FAILURE);
@@ -57,10 +89,12 @@ int main(int argc, char const *argv[])
 		exit(EXIT_FAILURE);
 	}
 	printf("\n\r Successfully connected with Client\n\r");
-	read( new_socket , buffer, 1024);
-	printf("%s\n",buffer );
-	send(new_socket , hello , strlen(hello) , 0 );
-	printf("Hello message sent\n");
+	
+        
+	datasend(new_socket);
+
+	close(server_fd);
+
 	return 0;
 }
 
