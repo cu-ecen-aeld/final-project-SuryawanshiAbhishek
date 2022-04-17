@@ -34,7 +34,7 @@ cat conf/local.conf | grep "${IMAGE_F}" > /dev/null
 local_imgf_info=$?
 
 #extra packages
-CORE_IM_ADD="CORE_IMAGE_EXTRA_INSTALL += \"gpiotest i2c-config client-config server-config\""
+CORE_IM_ADD="CORE_IMAGE_EXTRA_INSTALL += \"gpiotest i2c-config client-config server-config wifi-setup\""
 cat conf/local.conf | grep "${CORE_IM_ADD}" > /dev/null
 local_coreimadd_info=$?
 
