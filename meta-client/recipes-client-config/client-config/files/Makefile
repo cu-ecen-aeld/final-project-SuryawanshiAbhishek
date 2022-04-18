@@ -5,23 +5,17 @@ ifeq ($(CC),)
 endif
 
 ifeq ($(CFLAGS),)
-        CFLAGS= -g -Wall -Werror
+        CFLAGS= -g 
 endif
 
-all: clientapplication utctimeapp
-default: clientapplication utctimeapp
+all: clientapplication
+default: clientapplication 
 
 clientapplication : client.o
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -o clientapplication client.o $(LDFLAGS)
 
-utctimeapp : utctime.o
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -o utctimeapp utctime.o $(LDFLAGS)
-
 client.o : client.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c client.c $(LDFLAGS)
 
-utctime.o :utctime.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c utctime.c $(LDFLAGS)
-
 clean :
-	rm -f clientapplication utctimeapp *.o 
+	rm -f clientapplication *.o 

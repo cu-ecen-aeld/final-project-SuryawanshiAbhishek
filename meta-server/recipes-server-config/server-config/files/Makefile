@@ -5,7 +5,7 @@ ifeq ($(CC),)
 endif
 
 ifeq ($(CFLAGS),)
-        CFLAGS= -g -Wall -Werror
+        CFLAGS= -g
 endif
 
 all: serverapplication 

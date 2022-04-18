@@ -34,7 +34,7 @@ cat conf/local.conf | grep "${IMAGE_F}" > /dev/null
 local_imgf_info=$?
 
 #extra packages
-CORE_IM_ADD="CORE_IMAGE_EXTRA_INSTALL += \"gpiotest i2c-config client-config server-config wifi-setup ntpconfig\""
+CORE_IM_ADD="CORE_IMAGE_EXTRA_INSTALL += \"gpiotest i2c-config client-config server-config wifi-setup ntpconfig lcd-config\""
 
 
 cat conf/local.conf | grep "${CORE_IM_ADD}" > /dev/null
@@ -213,6 +213,17 @@ if [ $layer_info -ne 0 ];then
         bitbake-layers add-layer ../meta-ntpserver
 else
         echo "meta-ntpservert layer already exists"
+fi
+
+
+bitbake-layers show-layers | grep "meta-lcd" > /dev/null
+layer_info=$?
+
+if [ $layer_info -ne 0 ];then
+        echo "Adding meta-lcd layer"
+        bitbake-layers add-layer ../meta-ntpserver
+else
+        echo "meta-lcd layer already exists"
 fi
 
 set -e
