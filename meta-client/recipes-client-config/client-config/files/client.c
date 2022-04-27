@@ -131,7 +131,9 @@ void readHumidity(int fdev, int sockfd)
     timestamp();
     printf("%s  humidity is: %.2f %%, data = %d\n",utctime, result, sensor_data);
 
-    int sprintfRetVal = sprintf(strBuf, "%s Humidity = %.2f %%\n",utctime, result);
+ //int sprintfRetVal = sprintf(strBuf, "%s\n Humidity = %.2f %%\n",utctime, result);
+ 
+    int sprintfRetVal = sprintf(strBuf, "Humidity=%.2f %%\n",result);
 
     //send humidity over socket
     int retVal = write(sockfd, strBuf, sprintfRetVal);
@@ -161,7 +163,10 @@ void readTemperature(int fdev, int sockfd, struct i2c_smbus_ioctl_data *sdat)
     timestamp();
    // print result
    printf("%s Room Temperature = %04.2f\n",utctime, temp);
-   int sprintfRetVal = sprintf(strBuf, "%s Room temperature = %04.2f\n", utctime,temp);
+
+   //int sprintfRetVal = sprintf(strBuf, "%s :Room temp=%04.2f\n", utctime,temp);
+   
+   int sprintfRetVal = sprintf(strBuf, "Room temp=%04.2f\n",temp);
 
    //send the temperature over socket
    int retVal = write(sockfd, strBuf, sprintfRetVal);
